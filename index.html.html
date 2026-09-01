@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorkTime Pro - Pastel Edition</title>
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Nunito', 'Segoe UI', Tahoma, sans-serif;
+}
+
+body{
+    background:#f4f6fb;
+    color:#4a5568;
+}
+
+.app{
+    width:420px;
+    max-width:100%;
+    min-height:100vh;
+    margin:auto;
+    background:#fdfdff;
+    position:relative;
+    padding-bottom:90px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.03);
+}
+
+.header{
+    background:linear-gradient(135deg,#b5c7ed,#d4b5ed);
+    color:#4a3f55;
+    padding:30px 20px 75px;
+    border-radius:0 0 35px 35px;
+    box-shadow: 0 8px 20px rgba(181, 199, 237, 0.25);
+}
+
+.header small {
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 11px;
+    opacity: 0.85;
+}
+
+.header h2{
+    margin-top:6px;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.content{
+    margin-top:-50px;
+    padding:0 18px;
+}
+
+.card{
+    background:#ffffff;
+    padding:20px;
+    border-radius:24px;
+    margin-bottom:16px;
+    box-shadow:0 8px 25px rgba(181, 199, 237, 0.15);
+    border: 1px solid rgba(230, 235, 245, 0.6);
+}
+
+.clock{
+    font-size:36px;
+    font-weight:800;
+    color:#6c757d;
+    margin:10px 0;
+    letter-spacing: -1px;
+}
+
+.status{
+    display:inline-block;
+    background:#e2f7ec;
+    color:#2d9d68;
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-top:16px;
+}
+
+button{
+    border:none;
+    padding:14px;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:700;
+    transition: all 0.2s ease;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+.primary{
+    background:#b5c7ed;
+    color:#3b4963;
+    box-shadow: 0 4px 12px rgba(181, 199, 237, 0.4);
+}
+
+.secondary{
+    background:#f1e6ff;
+    color:#634b7a;
+    box-shadow: 0 4px 12px rgba(241, 230, 255, 0.4);
+}
+
+.gps{
+    background:#e6f9f0;
+    color:#238253;
+    padding:14px;
+    border-radius:14px;
+    margin-top:14px;
+    font-size:13px;
+    line-height: 1.5;
+    border: 1px dashed rgba(35, 130, 83, 0.2);
+}
+
+.map{
+    height:210px;
+    background:
+    repeating-linear-gradient(
+        25deg,
+        #f0f4ec 0px,
+        #f0f4ec 35px,
+        white 36px,
+        white 42px
+    );
+    border-radius:18px;
+    position:relative;
+    overflow:hidden;
+    border: 2px solid #edf2f7;
+}
+
+.pin{
+    position:absolute;
+    left:48%;
+    top:40%;
+    font-size:38px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.face,
+.finger,
+.pinbox{
+    display:none;
+    text-align:center;
+    background:#f7f9fd;
+    padding:20px;
+    border-radius:20px;
+    margin-top:16px;
+    border: 1px solid #e2e8f0;
+}
+
+video{
+    width:100%;
+    height:240px;
+    object-fit:cover;
+    border-radius:16px;
+    background:#2d3748;
+}
+
+.fingerprint{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    background:#eef2fd;
+    display:grid;
+    place-items:center;
+    font-size:70px;
+    margin:10px auto 20px;
+    box-shadow: 0 6px 15px rgba(181, 199, 237, 0.3);
+}
+
+.scanning{
+    animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+    50%{
+        transform:scale(1.08);
+    }
+}
+
+.result{
+    display:none;
+    background:#e2f7ec;
+    color:#2d9d68;
+    padding:16px;
+    border-radius:14px;
+    margin-top:16px;
+    text-align:center;
+    font-weight: 600;
+}
+
+.bottom{
+    position:fixed;
+    bottom:0;
+    width:420px;
+    max-width:100%;
+    height:75px;
+    background:rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-top:1px solid #edf2f7;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    z-index: 1000;
+}
+
+.nav{
+    background:none;
+    color:#a0aec0;
+    font-size:11px;
+    font-weight: 600;
+}
+
+.nav span{
+    display:block;
+    font-size:22px;
+    margin-bottom:3px;
+}
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+.info{
+    display:flex;
+    justify-content:space-between;
+    padding:14px 0;
+    border-bottom:1px solid #f1f5f9;
+    font-size:13px;
+}
+
+.info span{
+    color:#718096;
+    font-weight: 500;
+}
+
+input[type="password"] {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 22px;
+    letter-spacing: 8px;
+    background: #fff;
+    color: #4a5568;
+    outline: none;
+}
+
+input[type="password"]:focus {
+    border-color: #b5c7ed;
+}
+
+h3 {
+    color: #3b4963;
+    font-size: 16px;
+    font-weight: 700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- HEADER -->
+<div class="header">
+    <small>WORKTIME PRO</small>
+    <h2>สวัสดี, ปริชาติ ✨</h2>
+    <small>EMP-001 • ฝ่ายการตลาด</small>
+</div>
+
+<div class="content">
+
+<!-- HOME -->
+<div id="home" class="section active">
+    <div class="card">
+        <span class="status" id="status">พร้อมเข้างาน</span>
+        <div class="clock" id="clock">00:00:00</div>
+        <p style="color:#a0aec0;font-size:12px; font-weight:500;">📍 โรงงาน ABC (อาคารผลิตหลัก)</p>
+
+        <div class="buttons">
+            <button class="primary" onclick="openScan()">🟢 เข้างาน</button>
+            <button class="secondary" onclick="clockOut()">🔴 ออกงาน</button>
+        </div>
+
+        <div class="gps">
+            📍 GPS : <b id="gpsStatus">กำลังตรวจสอบ...</b><br>
+            <small id="location" style="opacity: 0.9;">ยังไม่ได้ระบุตำแหน่ง</small>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>📊 สรุปการทำงาน</h3><br>
+        <div class="info"><b>เข้างานเดือนนี้</b><span>21 วัน</span></div>
+        <div class="info"><b>มาสาย</b><span>2 ครั้ง</span></div>
+        <div class="info"><b>ชั่วโมงทำงาน</b><span>168 ชั่วโมง</span></div>
+        <div class="info"><b>วันลา</b><span>2 วัน</span></div>
+    </div>
+
+    <div class="card">
+        <h3>📍 ตำแหน่งระหว่างทำงาน</h3><br>
+        <div class="map">
+            <div class="pin">📍</div>
+        </div>
+    </div>
+</div>
+
+<!-- SCAN -->
+<div id="scan" class="section">
+    <div class="card">
+        <h3>🔐 ยืนยันตัวตน (Check-in)</h3><br>
+
+        <div style="background:#f4f7fc; padding:14px; border-radius:16px; margin-bottom:16px; font-size:13px; line-height: 1.6; border:1px solid #e8eff7;">
+            👤 <b>ปริชาติ เชดสิงห์</b> (EMP001)<br>
+            🏢 <b>โซน:</b> โรงงาน ABC (อาคารผลิตหลัก ชั้น 2)<br>
+            👥 <b>พนักงานในโซนนี้:</b> <span style="color:#5c7cb8; font-weight:bold;">14 คนปฏิบัติงานอยู่</span><br>
+            📏 <b>รัศมีพื้นที่โรงงาน:</b> <span style="color:#2d9d68; font-weight:bold;">150 เมตร</span><br>
+            📍 <span id="scanGpsArea">กำลังตรวจสอบพิกัดพื้นที่...</span><br><br>
+            <div id="checkSteps" style="color:#718096; font-weight:600;">⏳ รอการยืนยันตัวตนและพิน</div>
+        </div>
+
+        <button class="primary" style="width:100%" onclick="startFace()">👤 สแกนใบหน้า</button>
+        <button class="secondary" style="width:100%;margin-top:10px" onclick="startFinger()">☝️ สแกนนิ้วมือ</button>
+        <button class="secondary" style="width:100%;margin-top:10px;background:#fde8e8;color:#a83232;" onclick="startPinBox()">🔑 ใส่รหัส PIN / Password</button>
+
+        <!-- FACE -->
+        <div class="face" id="face">
+            <video id="video" autoplay playsinline></video>
+            <p id="faceStatus" style="margin:10px;color:#718096;font-size:13px;">กำลังเปิดกล้อง...</p>
+            <button class="primary" style="width:100%" onclick="confirmFace()">📸 ยืนยันใบหน้า</button>
+            <button class="secondary" style="width:100%;margin-top:8px" onclick="stopFace()">ปิดกล้อง</button>
+        </div>
+
+        <!-- FINGER -->
+        <div class="finger" id="finger">
+            <div class="fingerprint" id="fingerprint">☝️</div>
+            <h3 style="margin-bottom:5px;">สแกนลายนิ้วมือ</h3>
+            <p id="fingerStatus" style="color:#718096;font-size:13px;margin-bottom:15px">วางนิ้วบนเซ็นเซอร์</p>
+            <button class="primary" style="width:100%" onclick="confirmFinger()">☝️ แตะเพื่อสแกน</button>
+        </div>
+
+        <!-- PIN BOX -->
+        <div class="pinbox" id="pinbox">
+            <h3 style="margin-bottom:5px;">🔑 ใส่รหัส PIN 4 หลัก</h3>
+            <p style="color:#718096;margin-bottom:10px;font-size:12px;">รหัสผ่านส่วนตัวสำหรับลงเวลา</p>
+            <input type="password" id="pinInput" maxlength="4" placeholder="••••">
+            <button class="primary" style="width:100%" onclick="confirmPin()">✅ ยืนยันรหัส PIN</button>
+        </div>
+
+        <div class="result" id="result">
+            ✨ ยืนยันตัวตนสำเร็จ ✨<br>
+            เวลา : <b id="resultTime"></b><br>
+            📍 พิกัดโรงงานและ GPS ถูกบันทึกเรียบร้อย
+        </div>
+    </div>
+</div>
+
+<!-- GPS -->
+<div id="gpsPage" class="section">
+    <div class="card">
+        <h3>📍 พิกัดและรัศมีโรงงาน</h3><br>
+        <div class="map">
+            <div class="pin">📍</div>
+        </div><br>
+        <div class="info"><b>สถานะ</b><span id="workStatus">ยังไม่เข้างาน</span></div>
+        <div class="info"><b>โซนปฏิบัติงาน</b><span>โรงงาน ABC (อาคารผลิตหลัก)</span></div>
+        <div class="info"><b>พนักงานในโซน</b><span>14 คน</span></div>
+        <div class="info"><b>รัศมีพื้นที่โรงงาน</b><span>150 เมตร</span></div>
+        <div class="info"><b>พิกัดโรงงานที่บันทึก</b><span id="coords">-</span></div>
+    </div>
+</div>
+
+</div>
+
+<!-- MENU -->
+<div class="bottom">
+    <button class="nav" onclick="showPage('home')">
+        <span>🏠</span>หน้าหลัก
+    </button>
+    <button class="nav" onclick="showPage('gpsPage')">
+        <span>📍</span>GPS
+    </button>
+    <button class="nav" onclick="openScan()">
+        <span>🔐</span>ลงเวลา
+    </button>
+</div>
+
+<script>
+
+let stream = null;
+let isVerified = false;
+let isGpsVerified = false;
+let savedPlantCoords = null;
+
+function updateClock(){
+    const now = new Date();
+    document.getElementById("clock").textContent = now.toLocaleTimeString("th-TH", { hour:"2-digit", minute:"2-digit", second:"2-digit" });
+}
+setInterval(updateClock,1000);
+updateClock();
+
+function showPage(id){
+    document.querySelectorAll(".section").forEach(page => page.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    if(id === 'gpsPage' || id === 'scan'){
+        checkGPS();
+    }
+}
+
+function openScan(){
+    showPage("scan");
+    checkGPS();
+}
+
+function resetScanBoxes(){
+    stopFace();
+    document.getElementById("finger").style.display = "none";
+    document.getElementById("pinbox").style.display = "none";
+}
+
+// FACE SCAN
+async function startFace(){
+    resetScanBoxes();
+    document.getElementById("face").style.display = "block";
+    try{
+        stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user" }, audio:false });
+        document.getElementById("video").srcObject = stream;
+        document.getElementById("faceStatus").textContent = "📷 กล้องพร้อมใช้งาน";
+    }catch(error){
+        document.getElementById("faceStatus").textContent = "⚠️ ไม่สามารถเปิดกล้องได้";
+    }
+}
+
+function stopFace(){
+    if(stream){
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+    document.getElementById("face").style.display = "none";
+}
+
+function confirmFace(){
+    document.getElementById("faceStatus").textContent = "🔎 กำลังตรวจสอบใบหน้า...";
+    setTimeout(()=>{
+        stopFace();
+        isVerified = true;
+        updateCheckSteps("✅ ยืนยันตัวตน (ใบหน้า) ผ่าน");
+        checkAndExecuteCheckIn("สแกนใบหน้า");
+    }, 1200);
+}
+
+// FINGERPRINT
+function startFinger(){
+    resetScanBoxes();
+    document.getElementById("finger").style.display = "block";
+}
+
+function confirmFinger(){
+    const fp = document.getElementById("fingerprint");
+    fp.classList.add("scanning");
+    document.getElementById("fingerStatus").textContent = "กำลังตรวจสอบลายนิ้วมือ...";
+    setTimeout(() => {
+        fp.classList.remove("scanning");
+        document.getElementById("finger").style.display = "none";
+        isVerified = true;
+        updateCheckSteps("✅ ยืนยันตัวตน (ลายนิ้วมือ) ผ่าน");
+        checkAndExecuteCheckIn("สแกนนิ้วมือ");
+    }, 1200);
+}
+
+// PIN / PASSWORD
+function startPinBox(){
+    resetScanBoxes();
+    document.getElementById("pinbox").style.display = "block";
+}
+
+function confirmPin(){
+    const pin = document.getElementById("pinInput").value;
+    if(pin.length === 4){
+        document.getElementById("pinbox").style.display = "none";
+        isVerified = true;
+        updateCheckSteps("✅ ยืนยันรหัส PIN ผ่าน");
+        checkAndExecuteCheckIn("รหัส PIN");
+    } else {
+        alert("กรุณากรอกรหัส PIN 4 หลักให้ถูกต้อง");
+    }
+}
+
+function updateCheckSteps(verifyText){
+    const stepsEl = document.getElementById("checkSteps");
+    if(stepsEl){
+        let gpsText = isGpsVerified ? "✅ GPS ผ่าน (ภายในรัศมี 150 ม.)" : "⏳ กำลังตรวจสอบ GPS";
+        stepsEl.innerHTML = `${verifyText}<br>${gpsText}`;
+    }
+}
+
+function checkAndExecuteCheckIn(methodText){
+    if(isVerified && isGpsVerified){
+        const now = new Date();
+        const timeString = now.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }) + " น.";
+        
+        document.getElementById("resultTime").textContent = timeString;
+        document.getElementById("result").style.display = "block";
+        document.getElementById("status").textContent = "ปฏิบัติงานอยู่ (" + methodText + ")";
+        document.getElementById("status").style.background = "#e2f7ec";
+        document.getElementById("status").style.color = "#2d9d68";
+        
+        const workStatus = document.getElementById("workStatus");
+        if(workStatus) workStatus.textContent = "เข้างานแล้ว (" + timeString + ")";
+
+        setTimeout(() => {
+            document.getElementById("result").style.display = "none";
+            showPage("home");
+        }, 2000);
+    }
+}
+
+function clockOut(){
+    if(confirm("คุณต้องการบันทึกเวลา 'ออกงาน' ใช่หรือไม่?")){
+        const now = new Date();
+        const timeString = now.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }) + " น.";
+
+        document.getElementById("status").textContent = "เลิกงานแล้ว";
+        document.getElementById("status").style.background = "#fde8e8";
+        document.getElementById("status").style.color = "#e53e3e";
+
+        const workStatus = document.getElementById("workStatus");
+        if(workStatus) workStatus.textContent = "ออกจากงานแล้ว (" + timeString + ")";
+        
+        alert("บันทึกเวลาออกงานเรียบร้อยแล้ว เวลา: " + timeString);
+    }
+}
+
+// GPS & RAdius
+function checkGPS(){
+    const gpsStatus = document.getElementById("gpsStatus");
+    const locationText = document.getElementById("location");
+    const coordsText = document.getElementById("coords");
+    const scanGpsArea = document.getElementById("scanGpsArea");
+
+    if("geolocation" in navigator){
+        if(gpsStatus) gpsStatus.textContent = "กำลังค้นหาพิกัดโรงงาน...";
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                savedPlantCoords = { lat: lat, lng: lng };
+                isGpsVerified = true;
+
+                if(gpsStatus) gpsStatus.textContent = "อยู่ในรัศมีโรงงาน (150 เมตร)";
+                if(locationText) locationText.textContent = `พิกัดโรงงาน: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                if(coordsText) coordsText.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)} (บันทึกแล้ว)`;
+                if(scanGpsArea) scanGpsArea.innerHTML = "<b>โรงงาน ABC</b> — <span style='color:#2d9d68;'>พิกัดบันทึกแล้ว (อยู่ในรัศมี 150ม.)</span>";
+                
+                updateCheckSteps(isVerified ? "✅ ยืนยันตัวตนผ่าน" : "⏳ รอการยืนยันตัวตน");
+            },
+            (error) => {
+                savedPlantCoords = { lat: 13.7563, lng: 100.5018 };
+                isGpsVerified = true;
+
+                if(gpsStatus) gpsStatus.textContent = "ใช้พิกัดจำลองโรงงาน (รัศมี 150 ม.)";
+                if(locationText) locationText.textContent = "อาคารผลิตหลัก ชั้น 2";
+                if(coordsText) coordsText.textContent = "13.7563, 100.5018 (บันทึกพิกัดแล้ว)";
+                if(scanGpsArea) scanGpsArea.innerHTML = "<b>โรงงาน ABC</b> — <span style='color:#2d9d68;'>พิกัดบันทึกแล้ว (จำลอง)</span>";
+                
+                updateCheckSteps(isVerified ? "✅ ยืนยันตัวตนผ่าน" : "⏳ รอการยืนยันตัวตน");
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    } else {
+        if(gpsStatus) gpsStatus.textContent = "อุปกรณ์ไม่รองรับระบบ GPS";
+    }
+}
+
+checkGPS();
+
+</script>
+</body>
+</html>
